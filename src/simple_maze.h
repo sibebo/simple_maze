@@ -13,7 +13,7 @@
 
 #include <pugixml.hpp>
 
-class SbbMaze
+class SimpleMaze
 {
     class Room;
 
@@ -194,7 +194,7 @@ class SbbMaze
     std::vector<Room>  rooms;
 
 public:
-    SbbMaze(size_t width, size_t height)
+    SimpleMaze(size_t width, size_t height)
         : width(width),
           height(height),
           rooms(width * height, Room(4))
