@@ -64,9 +64,9 @@ void    TestWikipediaMaze(int argc, char **argv)
 void    TestSimpleMaze()
 {
     srand(time(nullptr));
-    SimpleMaze maze(20, 20);
+    SimpleMaze maze;
 
-    maze.Setup();
+    maze.Setup(20, 20);
 //    maze.Draw("../maze_raw.svg");
 //    maze.Dump("../maze_raw.txt");
 

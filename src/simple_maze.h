@@ -194,16 +194,16 @@ class SimpleMaze
     std::vector<Room>  rooms;
 
 public:
-    SimpleMaze(size_t width, size_t height)
-        : width(width),
-          height(height),
-          rooms(width * height, Room(4))
-    {
-        doors.reserve(width * height * 4);
-    }
+    SimpleMaze() {}
 
-    void    Setup()
+    void    Setup(size_t width, size_t height)
     {
+        this->width = width;
+        this->height = height;
+
+        rooms.resize(width * height, Room(4));
+        doors.reserve(width * height * 4);
+
         // Top row:
         for (size_t w = 0; w<width - 1; ++w)
         {
@@ -277,14 +277,13 @@ public:
             {
                 auto    &r = rooms[Index(w, h)];
 
-                Draw(svg, w, h, r.doors[0], 0);
-                Draw(svg, w, h, r.doors[1], 1);
-                Draw(svg, w, h, r.doors[2], 2);
-                Draw(svg, w, h, r.doors[3], 3);
+                size_t  index{0};
+                for (const auto door : r.doors)
+                {
+                    Draw(svg, w, h, door, index++);
+                }
             }
         }
-
-
 
         doc.save_file(filename.c_str());
     }
