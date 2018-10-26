@@ -5,7 +5,11 @@ CONFIG += c++17
 
 include(C:/Users/bruger/Documents/simon/prog/vendor/pugixml.pri)
 
-SOURCES += maze.cpp
+SOURCES += src/maze.cpp
 
 HEADERS += \
-    wikipedia_maze.h
+    src/wikipedia_maze.h \
+    simple_maze.h
+
+DISTFILES += \
+    .gitignore
