@@ -9,7 +9,7 @@ SOURCES += src/maze.cpp
 
 HEADERS += \
     src/wikipedia_maze.h \
-    simple_maze.h
+    src/simple_maze.h
 
 DISTFILES += \
     .gitignore
