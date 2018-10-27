@@ -273,11 +273,19 @@ class SimpleMaze
     size_t  width{0};
     size_t  height{0};
 
-    std::vector<Door>  doors;
+    std::vector<Door*>  doors;
     std::vector<Room>  rooms;
 
 public:
     SimpleMaze() {}
+    ~SimpleMaze()
+    {
+        for (auto &door : doors)
+        {
+            delete door;
+            door = nullptr;
+        }
+    }
 
     void    Setup(size_t width, size_t height)
     {
@@ -291,8 +299,11 @@ public:
         for (size_t w = 0; w<width - 1; ++w)
         {
             // Connect to the east:
-            doors.emplace_back();
-            auto door_east = &doors.back();
+            //doors.emplace_back();
+            //auto door_east = &doors.back();
+            auto door_east = new Door();
+            doors.push_back(door_east);
+
             door_east->Connect(&rooms[Index(w, 0)], &rooms[Index(w + 1, 0)]);
             rooms[Index(w, 0)].doors[1] = door_east;
             rooms[Index(w + 1, 0)].doors[3] = door_east;
@@ -303,15 +314,21 @@ public:
             for (size_t w = 0; w<width - 1; ++w)
             {
                 // Connect to the east:
-                doors.emplace_back();
-                auto door_east = &doors.back();
+                //doors.emplace_back();
+                //auto door_east = &doors.back();
+                auto door_east = new Door();
+                doors.push_back(door_east);
+
                 door_east->Connect(&rooms[Index(w, h)], &rooms[Index(w + 1, h)]);
                 rooms[Index(w, h)].doors[1] = door_east;
                 rooms[Index(w + 1, h)].doors[3] = door_east;
 
                 // Connect to the north:
-                doors.emplace_back();
-                auto door_north = &doors.back();
+                //doors.emplace_back();
+                //auto door_north = &doors.back();
+                auto door_north = new Door();
+                doors.push_back(door_north);
+
                 door_north->Connect(&rooms[Index(w, h)], &rooms[Index(w, h - 1)]);
                 rooms[Index(w, h)].doors[0] = door_north;
                 rooms[Index(w, h - 1)].doors[2] = door_north;
@@ -323,8 +340,11 @@ public:
         {
             auto w = width - 1;
             // Connect to the north:
-            doors.emplace_back();
-            auto door_north = &doors.back();
+            //doors.emplace_back();
+            //auto door_north = &doors.back();
+            auto door_north = new Door();
+            doors.push_back(door_north);
+
             door_north->Connect(&rooms[Index(w, h)], &rooms[Index(w, h - 1)]);
             rooms[Index(w, h)].doors[0] = door_north;
             rooms[Index(w, h - 1)].doors[2] = door_north;
@@ -337,7 +357,7 @@ public:
         }
         for (size_t i=0; i<doors.size(); ++i)
         {
-            doors[i].SetIndex(i);
+            doors[i]->SetIndex(i);
         }
     }
 
@@ -352,7 +372,7 @@ public:
     {
         for (auto &door : doors)
         {
-            door.ResetDrawn();
+            door->ResetDrawn();
         }
 
         pugi::xml_document  doc;
@@ -380,7 +400,7 @@ public:
     {
         for (auto &door : doors)
         {
-            door.ResetDrawn();
+            door->ResetDrawn();
         }
 
         pugi::xml_document  doc;
