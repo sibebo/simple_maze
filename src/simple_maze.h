@@ -9,8 +9,9 @@
 
 #include <pugixml.hpp>
 
-class SimpleMaze
+class SimpleMazeBase
 {
+protected:
     class Point
     {
     public:
@@ -201,8 +202,8 @@ class SimpleMaze
     std::vector<Room>  rooms;
 
 public:
-    SimpleMaze() {}
-    ~SimpleMaze()
+    SimpleMazeBase() {}
+    ~SimpleMazeBase()
     {
         for (auto &door : doors)
         {
@@ -211,13 +212,26 @@ public:
         }
     }
 
+    void    Iterate()
+    {
+        auto    &room = rooms[Index(10,10)];
+        room.Visit();
+        Iterate(&room);
+    }
+
+};
+
+class SimpleMaze : public SimpleMazeBase
+{
+public:
+    SimpleMaze() : SimpleMazeBase() {}
+
     void    Setup(size_t width, size_t height)
     {
         this->width = width;
         this->height = height;
 
         rooms.resize(width * height, Room(4));
-        doors.reserve(width * height * 4);
 
         // Top row:
         for (size_t w = 0; w<width - 1; ++w)
@@ -274,13 +288,6 @@ public:
         {
             doors[i]->SetIndex(i);
         }
-    }
-
-    void    Iterate()
-    {
-        auto    &room = rooms[Index(10,10)];
-        room.Visit();
-        Iterate(&room);
     }
 
     void    Draw(std::string filename)
