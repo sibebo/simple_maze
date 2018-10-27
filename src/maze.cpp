@@ -73,8 +73,6 @@ void    TestSimpleMaze()
     maze.Iterate();
 
     maze.Draw("../maze.svg");
-//    maze.Draw("../maze2.svg");
-    maze.DrawNew("../maze_new.svg");
 //    maze.Dump("../maze.txt");
     return;
 }

@@ -2,12 +2,7 @@
 #define SIMPLE_MAZE_H
 
 
-#include <iostream>
 #include <fstream>
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <time.h>
-//#include <string.h>
 #include <string>
 #include <vector>
 #include <cmath>
@@ -96,6 +91,25 @@ class SimpleMaze
             return doors_to_unvisited_rooms;
         }
 
+        void    DrawLine(pugi::xml_node &node, Point from, Point to, std::string color, size_t door_index)
+        {
+            from.x = std::round(from.x);
+            from.y = std::round(from.y);
+            to.x = std::round(to.x);
+            to.y = std::round(to.y);
+
+            auto line = node.append_child("line");
+            line.append_attribute("room").set_value(this->index);
+            line.append_attribute("door_dir").set_value(door_index);
+            line.append_attribute("x1").set_value(from.x);
+            line.append_attribute("y1").set_value(from.y);
+            line.append_attribute("x2").set_value(to.x);
+            line.append_attribute("y2").set_value(to.y);
+            line.append_attribute("stroke-width").set_value(4);
+            line.append_attribute("stroke").set_value(color.c_str());
+            line.append_attribute("opacity").set_value(1);
+        }
+
     public:
         size_t      index{0};
         std::vector<Door*>  doors;
@@ -159,28 +173,6 @@ class SimpleMaze
                 ++door_index;
             }
         }
-
-
-
-        void    DrawLine(pugi::xml_node &node, Point from, Point to, std::string color, size_t door_index)
-        {
-            from.x = std::round(from.x);
-            from.y = std::round(from.y);
-            to.x = std::round(to.x);
-            to.y = std::round(to.y);
-
-            auto line = node.append_child("line");
-            line.append_attribute("room").set_value(this->index);
-//            line.append_attribute("door").set_value(this->doors[door_index]->index);
-            line.append_attribute("door_dir").set_value(door_index);
-            line.append_attribute("x1").set_value(from.x);
-            line.append_attribute("y1").set_value(from.y);
-            line.append_attribute("x2").set_value(to.x);
-            line.append_attribute("y2").set_value(to.y);
-            line.append_attribute("stroke-width").set_value(4);
-            line.append_attribute("stroke").set_value(color.c_str());
-            line.append_attribute("opacity").set_value(1);
-        }
     };
 
     void    Iterate(Room *room)
@@ -200,74 +192,6 @@ class SimpleMaze
     size_t  Index(size_t w, size_t h)
     {
         return h * width + w;
-    }
-
-    void    Draw(pugi::xml_node &svg, size_t x1, size_t y1, size_t x2, size_t y2, std::string color, size_t room_index, size_t door_index)
-    {
-        //<line x1="0" y1="0" x2="200" y2="200" style="stroke:rgb(255,0,0);stroke-width:2" />
-        auto    line = svg.append_child("line");
-        line.append_attribute("room").set_value(room_index);
-//        line.append_attribute("door").set_value(this->doors[door_index]->index);
-        line.append_attribute("door_dir").set_value(door_index);
-        line.append_attribute("x1").set_value(x1);
-        line.append_attribute("y1").set_value(y1);
-        line.append_attribute("x2").set_value(x2);
-        line.append_attribute("y2").set_value(y2);
-        //line.append_attribute("style").set_value("stroke:black;stroke-width:1;");
-        line.append_attribute("stroke-width").set_value(4);
-        line.append_attribute("stroke").set_value(color.c_str());
-        line.append_attribute("opacity").set_value(1);
-    }
-
-    void    Draw(pugi::xml_node &svg, size_t w, size_t h, Door *door, size_t direction, size_t room_index)
-    {
-        size_t  x1{0};
-        size_t  y1{0};
-        size_t  x2{0};
-        size_t  y2{0};
-
-        size_t  scale{30};
-
-        switch(direction)
-        {
-        case 0:
-            x1 = (w + 0) * scale;
-            y1 = (h + 0) * scale;
-            x2 = (w + 1) * scale;
-            y2 = (h + 0) * scale;
-            break;
-        case 1:
-            x1 = (w + 1) * scale;
-            y1 = (h + 0) * scale;
-            x2 = (w + 1) * scale;
-            y2 = (h + 1) * scale;
-            break;
-        case 2:
-            x1 = (w + 1) * scale;
-            y1 = (h + 1) * scale;
-            x2 = (w + 0) * scale;
-            y2 = (h + 1) * scale;
-            break;
-        case 3:
-            x1 = (w + 0) * scale;
-            y1 = (h + 1) * scale;
-            x2 = (w + 0) * scale;
-            y2 = (h + 0) * scale;
-            break;
-        }
-
-        if (door)
-        {
-            if (!door->IsOpen() && !door->IsDrawn())
-            {
-                Draw(svg, x1, y1, x2, y2, "black", room_index, direction);
-                door->SetDrawn();
-            }
-        }
-        else
-        {
-            Draw(svg, x1, y1, x2, y2, "red", room_index, direction);
-        }
     }
 
     size_t  width{0};
@@ -299,8 +223,6 @@ public:
         for (size_t w = 0; w<width - 1; ++w)
         {
             // Connect to the east:
-            //doors.emplace_back();
-            //auto door_east = &doors.back();
             auto door_east = new Door();
             doors.push_back(door_east);
 
@@ -314,8 +236,6 @@ public:
             for (size_t w = 0; w<width - 1; ++w)
             {
                 // Connect to the east:
-                //doors.emplace_back();
-                //auto door_east = &doors.back();
                 auto door_east = new Door();
                 doors.push_back(door_east);
 
@@ -324,8 +244,6 @@ public:
                 rooms[Index(w + 1, h)].doors[3] = door_east;
 
                 // Connect to the north:
-                //doors.emplace_back();
-                //auto door_north = &doors.back();
                 auto door_north = new Door();
                 doors.push_back(door_north);
 
@@ -340,15 +258,12 @@ public:
         {
             auto w = width - 1;
             // Connect to the north:
-            //doors.emplace_back();
-            //auto door_north = &doors.back();
             auto door_north = new Door();
             doors.push_back(door_north);
 
             door_north->Connect(&rooms[Index(w, h)], &rooms[Index(w, h - 1)]);
             rooms[Index(w, h)].doors[0] = door_north;
             rooms[Index(w, h - 1)].doors[2] = door_north;
-
         }
 
         for (size_t i=0; i<rooms.size(); ++i)
@@ -369,34 +284,6 @@ public:
     }
 
     void    Draw(std::string filename)
-    {
-        for (auto &door : doors)
-        {
-            door->ResetDrawn();
-        }
-
-        pugi::xml_document  doc;
-
-        auto    svg = doc.append_child("svg");
-
-        for (size_t h = 0; h<height; ++h)
-        {
-            for (size_t w = 0; w<width; ++w)
-            {
-                auto    &r = rooms[Index(w, h)];
-
-                size_t  index{0};
-                for (auto &door : r.doors)
-                {
-                    Draw(svg, w, h, door, index++, r.index);
-                }
-            }
-        }
-
-        doc.save_file(filename.c_str());
-    }
-
-    void    DrawNew(std::string filename)
     {
         for (auto &door : doors)
         {
