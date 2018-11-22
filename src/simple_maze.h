@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 #include <pugixml.hpp>
 
@@ -299,17 +300,23 @@ public:
 
         pugi::xml_document  doc;
 
+        double  scale{30.0};
+
         auto    svg = doc.append_child("svg");
+        svg.append_attribute("xmlns").set_value("http://www.w3.org/2000/svg");
+        svg.append_attribute("width").set_value(scale * width);
+        svg.append_attribute("height").set_value(scale * height);
 
         for (size_t h = 0; h<height; ++h)
         {
             for (size_t w = 0; w<width; ++w)
             {
                 auto    &r = rooms[Index(w, h)];
-                r.DrawRoom(svg, {w,h}, 30);
+                r.DrawRoom(svg, {w,h}, scale);
             }
         }
 
+        //doc.save(std::cout, "\t", pugi::format_default | pugi::format_no_declaration);
         doc.save_file(filename.c_str());
     }
 
